@@ -1,7 +1,6 @@
 using Unity.Entities;
 using UnityEngine;
 
-// ReSharper disable once CheckNamespace
 public class MoveSpeedAuthoring : MonoBehaviour
 {
     public float value;
