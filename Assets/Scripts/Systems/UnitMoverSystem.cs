@@ -9,10 +9,13 @@ partial struct UnitMoverSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state) {
         foreach (var (localTransform, moveSpeed, physicsVelocity) in SystemAPI.Query<RefRW<LocalTransform>, RefRO<MoveSpeed>, RefRW<PhysicsVelocity>>()) {
-            var targetPosition = localTransform.ValueRO.Position + new float3(10f, 0f, 0f);
+            var targetPosition = (float3)MouseWorldPosition.Instance.GetPosition();
             var moveDirection = math.normalize(targetPosition - localTransform.ValueRO.Position);
 
-            localTransform.ValueRW.Rotation = quaternion.LookRotation(moveDirection, math.up());
+            const float rotationSpeed = 10f;
+
+            localTransform.ValueRW.Rotation = math.slerp(localTransform.ValueRO.Rotation, quaternion.LookRotation(moveDirection, math.up()),
+                rotationSpeed * SystemAPI.Time.DeltaTime);
 
             physicsVelocity.ValueRW.Linear = moveDirection * moveSpeed.ValueRO.value;
             physicsVelocity.ValueRW.Angular = float3.zero;
